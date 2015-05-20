@@ -28,3 +28,8 @@ Updated on December 11th, 2014 (ver 3.1)
 
 Options:
 - Press CNTRL+C to interrupt
+
+
+Installation
+------------------------------------
+The script has been written and tested using Python 2.7 (Anaconda Python Distribution)
