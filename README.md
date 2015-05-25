@@ -32,4 +32,4 @@ Options:
 
 Installation
 ------------------------------------
-The script has been written and tested using Python 2.7 (Anaconda Python Distribution)
+The script has been tested with Python 2.7 (Anaconda Python Distribution - Windows 8.1 64-bit)
