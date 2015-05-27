@@ -33,3 +33,8 @@ Options:
 Installation
 ------------------------------------
 The script has been tested with Python 2.7 (Anaconda Python Distribution - Windows 8.1 64-bit)
+
+Required modules:
+- numpy
+- itertools
+- time
