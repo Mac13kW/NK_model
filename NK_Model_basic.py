@@ -12,6 +12,7 @@ by Maciej Workiewicz (2014)
 import numpy as np
 import itertools
 from time import time
+from os.path import expanduser
 
 start = time()  # this will tell me how much time one run takes
 
@@ -119,6 +120,7 @@ def comb_and_values(N, NK_land, Power_key, inter_m):
         loc_p = 1  # assume it is
         for c4 in np.arange(N):  # check for the neighbourhood
             new_comb = Comb_and_value[c3, :N].copy()
+            new_comb = new_comb.astype(int)
             new_comb[c4] = abs(new_comb[c4] - 1)
             if ((Comb_and_value[c3, 2*N] <
                  Comb_and_value[np.sum(new_comb*Power_key), 2*N])):
@@ -140,16 +142,29 @@ for i_1 in np.arange(i):
     '''
     NK_land = nkland(N)
     if which_matrix == 1:  # random
-        Int_matrix = matrix_rand(N, K)
+        Int_matrix = matrix_rand(N, K).astype(int)
+    elif which_matrix == 2:
+        Int_matrix = Int_matrix.astype(int)
 
     NK[i_1] = comb_and_values(N, NK_land, Power_key, Int_matrix)
 
-disc_loc = ('C:\\Output_folder\\')  # change that to match yours
+disc_loc = expanduser('~')  # change that to match yours
 np.save(disc_loc + 'NK_landscape_N_' + str(N) + '_K_' + str(K) +
         '_i_' + str(i) + '.npy', NK)
 '''
 This saves the landscape into a numpy binary file
+
+The output is a 3D array with:
+The first dimension NK[a, :, :] is the number of an iteration (from 0 to i)
+The second dimension NK[:, b, :] is the location on a given landscape, where b ranges from 0 to 2^N
+The third dimension NK[:, :, c] captures:
+    - the first N columns are for the combinations of N decision variables DV
+    - the second N columns are for the contribution values of each DV
+    - the next value (index=2*N) is for the total fit (avg of N contributions)
+    - the last one (index=2*N+1 is to find out whether it is the local peak (0 or 1)
 '''
+
+print('the average number of peaks per landscape is: ' + str(np.sum(NK[:, :, 2*N+1])/float(i)))
 
 elapsed_time = time() - start
 print(' time: ' + str("%.2f" % elapsed_time) + ' sec')
