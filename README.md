@@ -1,9 +1,24 @@
 NK_model
 ========
 
-NK model (Version 3.1)
+New set of NK model exercises, created on July 2, 2018
+Files:
+* 1_landscape_creation.py
+* 2_local_search.py
+* 3_decentralized.py
 
-This is a simple example of an NK model. The simulation uses an NK Model
+The three files form a set of exercises which are aimed at introducing
+the user to the NK model. The first file creates NK landscapes and reports
+simple summary statistics. The other two files are different versions of
+search on those landscapes and report overall fitness level produced by
+that search. The code has been adjusted to work on Python 2.7 and 3.6 without
+additional changes.
+
+
+
+NK_model_basic (ver 3.1) (old version)
+
+This is an example of an NK model. The simulation uses an NK Model
 to represent a task environment of varying degree of complexity (K).
 It produces i NK landscapes, together with all combinations, contributions
 of each combination of decision variables and information whether a
