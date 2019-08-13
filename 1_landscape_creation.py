@@ -1,53 +1,65 @@
 # -*- coding: utf-8 -*-
-"""
+'''
 Created on Wed Jun 13 15:42:13 2018
+Updated on Tue May 21 08:49:00 2019
 
 @author: Maciej Workiewicz
-"""
 
-print("""
+The code has been tested on Python 2.7 and 3.6 and higher
+'''
+
+print('''
 ----------------------------------------------------
 Running Module 1: NK landscape creation and analysis
 ----------------------------------------------------
-""")
+''')
 
 # COMMENTS
-'''
-This code generates NK landscapes for a specific interaction matrix and number
-of interactions between the decision variables. It has been created for
-NK landscapes with N=6, but it can be adapted to for other values of N.
-You can choose the type of an interaction matrix by setting variable
-"which_imatrix" to:
-    1 - for a random interaction matrix (IM)
-    2 - for a modular (block-diagonal) IM
-    3 - for a nearly modular IM
-    4 - for a diagonal IM
 
-For the random IM the user can also set K from 0 to N-1 to tune the number of
-interactions.
-'''
+# =============================================================================
+# This code generates NK landscapes for a specific interaction matrix (IM) and 
+# number of interactions between the decision variables (K). It has been created
+# for NK landscapes with N=6, but it can be adapted to for other values of N.
+# You can choose the type of an interaction matrix by setting variable
+# "which_imatrix" to:
+#     1 - for a random interaction matrix (IM)
+#     2 - for a modular (block-diagonal) IM
+#     3 - for a nearly modular IM
+#     4 - for a diagonal IM
+#     5 - highly influential IM (Baumann & Siggelkow 2013)
+#     6 - highly dependent IM (Baumann & Siggelkow 2013)
+#     7 - Local IM (Rivkin and Siggelkow, 2007)
+# 
+# For the random IM the user can also set K from 0 to N-1 to tune the number of
+# interactions.
+# =============================================================================
+
 
 # *** IMPORTED PACKAGES ***
 import numpy as np
 import itertools
-from os.path import expanduser  # new
+import os # new
 from time import time
 import matplotlib.pyplot as plt
+import random
+
 
 start = time()  # starts the clock used to measure the execution speed
 
 # *** MODEL INPUTS ****************************************************
 
-# Do not change these parameters ----------------------------------
+# NK landscape parameters -----------------------------------------
 N = 6  # number of detailed decisions per lower level landscape   |
 i = 1000  # we will generate 1000 NK landscapes to begin with     |
 # -----------------------------------------------------------------
 
 # You can change the following variables:
-which_imatrix = 2  # defines the type of an interaction matrix
+which_imatrix = 1  # defines the type of an interaction matrix
                    # choose 1 for random, 2 for modular, 3 for nearly modular,
-                   # and 4 for diagonal (see below)
-K = 2  # only has an effect when you choose the random interaction matrix
+                   # 4 for diagonal, 5 for highly influential, and
+                   # 6 for highly dependent, 7 local (see below)
+K = 5  # only has an effect when you choose the random interaction matrix (1)
+       # set to 2 for other interaction matrices
 
 
 # *** GENERATING INTERACTION MATRICES ***************************************
@@ -68,10 +80,12 @@ def imatrix_rand():
             Int_matrix_rand[aa1, aa2] = 1  # we turn on the interactions with K other variables
     return(Int_matrix_rand)
 
-'''
-Below are the other three types of interaction matrices.
-You can edit those if you want to check other petterns of interactions.
-'''
+
+#==============================================================================
+# Below are the other three types of interaction matrices.
+# You can edit those if you want to check other petterns of interactions.
+#==============================================================================
+
 if which_imatrix == 2:  # MODULAR
     K = 2  # set to the average value
     Int_matrix = \
@@ -96,15 +110,50 @@ elif which_imatrix == 3:  # NEARLY MODULAR
                  [0, 0, 0, 1, 1, 1]
                  ])
 elif which_imatrix == 4:  # DIAGONAL
-    K = 2  # set to the average value
-    Int_matrix = \
+    K = 2  # set to average value and updated code below to poke three random holes
+    Int_matrix4 = \
         np.array([
                  [1, 0, 0, 0, 0, 0],
                  [1, 1, 0, 0, 0, 0],
                  [1, 1, 1, 0, 0, 0],
                  [1, 1, 1, 1, 0, 0],
-                 [0, 1, 0, 1, 1, 0],
-                 [1, 1, 1, 0, 1, 1]
+                 [1, 1, 1, 1, 1, 0],
+                 [1, 1, 1, 1, 1, 1]
+                 ])
+    
+elif which_imatrix == 5:  # HIGHLY INFLUENTIAL Baumann & Siggelkow 2013
+    K = 2  # set to the average value
+    Int_matrix = \
+        np.array([
+                 [1, 1, 1, 0, 0, 0],
+                 [1, 1, 1, 0, 0, 0],
+                 [1, 1, 1, 0, 0, 0],
+                 [1, 1, 0, 1, 0, 0],
+                 [1, 1, 0, 0, 1, 0],
+                 [1, 1, 0, 0, 0, 1]
+                 ])
+
+elif which_imatrix == 6:  # HIGHLY DEPENDENT Baumann & Siggelkow 2013
+    K = 2  # set to the average value
+    Int_matrix = \
+        np.array([
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 1, 1, 1],
+                 [1, 1, 1, 0, 0, 0],
+                 [0, 0, 0, 1, 0, 0],
+                 [0, 0, 0, 0, 1, 0],
+                 [0, 0, 0, 0, 0, 1]
+                 ])
+elif which_imatrix == 7:  # LOCAL Rivkin and Siggelkow, 2007
+    K = 2  # set to the average value
+    Int_matrix = \
+        np.array([
+                 [1, 1, 0, 0, 0, 1],
+                 [1, 1, 1, 0, 0, 0],
+                 [0, 1, 1, 1, 0, 0],
+                 [0, 0, 1, 1, 1, 0],
+                 [0, 0, 0, 1, 1, 1],
+                 [1, 0, 0, 0, 1, 1]
                  ])
 
 # *** NK GENERATING FUNCTIONS ***********************************************
@@ -121,7 +170,7 @@ def calc_fit(NK_land_, inter_m, Current_position, Power_key_):
 
 
 def comb_and_values(NK_land_, Power_key_, inter_m):
-    """
+    '''
     Calculates values for all combinations on the landscape. The resulting
     array contains:
     - the first columns indexed from 0 to N-1 are for each of the combinations
@@ -129,7 +178,7 @@ def comb_and_values(NK_land_, Power_key_, inter_m):
     - the column indexed 2N is for the total fit (average of the entire vector)
     - column indexed 2N+1 is a dummy, with 1 indicating a local peak
     - the last column is a dummy, with 1 indicating the global peak
-    """
+    '''
     Comb_and_value = np.zeros((2**N, N*2+3))  # to capture the results
     c1 = 0  # starting counter for location
     for c2 in itertools.product(range(2), repeat=N):
@@ -164,6 +213,46 @@ for i_1 in np.arange(i):
     '''
     if which_imatrix==1:
         Int_matrix = imatrix_rand().astype(int)
+    elif which_imatrix==4:  # diagonal
+        '''
+        The code below serves to poke three holes in the diagonal IM so that
+        K=2. It is a little bit cumbersome but does the job  :-)
+        Note that it only works with N=6
+        '''
+        Int_matrix = Int_matrix4.copy()
+        id_change = random.sample(range(15), 3)
+        for index in id_change:
+            if index == 0:
+                Int_matrix[1,0] = 0
+            elif index == 1:
+                Int_matrix[2,0] = 0
+            elif index == 2:
+                Int_matrix[2,1] = 0
+            elif index == 3:
+                Int_matrix[3,0] = 0
+            elif index == 4:
+                Int_matrix[3,1] = 0
+            elif index == 5:
+                Int_matrix[3,2] = 0
+            elif index == 6:
+                Int_matrix[4,0] = 0
+            elif index == 7:
+                Int_matrix[4,1] = 0
+            elif index == 8:
+                Int_matrix[4,2] = 0
+            elif index == 9:
+                Int_matrix[4,3] = 0
+            elif index == 10:
+                Int_matrix[5,0] = 0
+            elif index == 11:
+                Int_matrix[5,1] = 0
+            elif index == 12:
+                Int_matrix[5,2] = 0
+            elif index == 13:
+                Int_matrix[5,3] = 0
+            elif index == 14:
+                Int_matrix[5,4] = 0
+    
     NK_land = np.random.rand(2**N, N)  # this is a table of random U(0,1) numbers
     # Now it is time to survey the topography of our NK landscape
     Landscape_data[i_1] = comb_and_values(NK_land, Power_key, Int_matrix)
@@ -188,22 +277,28 @@ print('average maximum value: ' + str(np.mean(max_values)))
 print('average minimum value: ' + str(np.mean(min_values)))
 
 # plot histogram of the number of local peaks in our sample
-plt.hist(number_of_peaks, bins=20, range=(1, 20), color='dodgerblue')
+plt.figure(1, facecolor='white', figsize=(8, 6), dpi=150)  # for screens with
+#          higher resolution change dpi to 150 or 200. For normal use 75.
+plt.hist(number_of_peaks, bins=50, range=(1, 200), color='dodgerblue')
 plt.title('Distribution of the number of peaks', size=12)
 plt.xlabel('number of peaks', size=10)
 plt.ylabel('frequency', size=10)
 
 
 # *** SAVING THE LANDSCAPES AS A BINARY FILE FOR FUTURE RETRIEVAL ************
-'''
-If you are saving files on a Mac, change the double back-slash \\ into a single
-slash /
-'''
-file_name = expanduser("~")  # we will save it in your home folder
-np.save(file_name + '\\NK_land_type_' + str(which_imatrix) + '_K_' + str(K) +
-        '_i_' + str(i) + '.npy', Landscape_data)
+
+#==============================================================================
+# If you are saving files on a Mac, change the double back-slash \\ into a 
+# single slash /
+#==============================================================================
+
+file_name = os.path.expanduser("~")  # we will save it in your home folder
+if not os.path.exists(file_name + '\\NK_workshop\\'):
+    os.makedirs(file_name + '\\NK_workshop\\')
+np.save(file_name + '\\NK_workshop\\NK_land_type_' + str(which_imatrix) +
+        '_K_' + str(K) + '_i_' + str(i) + '.npy', Landscape_data)
 
 elapsed_time = time() - start
-print(' time: ' + str("%.2f" % elapsed_time) + ' sec')
+print('time: ' + str("%.2f" % elapsed_time) + ' sec')
 
 # END OF LINE
