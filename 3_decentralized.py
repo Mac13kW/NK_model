@@ -1,25 +1,28 @@
 # -*- coding: utf-8 -*-
-"""
+'''
 Created on Thu Jun 14 15:07:29 2018
 
 @author: Maciej Workiewicz
-"""
 
-print("""
+The code has been tested on Python 2.7 and 3.6 and higher
+'''
+
+print('''
 ----------------------------------------------------
 Running Module 3: Decentralized local search
 ----------------------------------------------------
-""")
+''')
 
 import numpy as np
 from os.path import expanduser  # new
 import matplotlib.pyplot as plt
+import csv
 
-# Do not change these parameters----
-N = 6  #                           |
-i = 1000  # number of iterations   |
-t = 50  # time periods             |
-# ----------------------------------
+# Do not change these parameters---------------------------------------------
+N = 6   # Keep at N=6                       
+i = 1000  # number of iterations. Let's keep it at 1000 to save tim
+t = 50   # time periods. Initially set to 50                  
+# ---------------------------------------------------------------------------
 
 '''
 You can experiment with different setting of the following two variables:
@@ -32,13 +35,16 @@ K - set to 2 for which_imatrix = 2, 3, and 4. For which_imatrix=1 you can choose
 # You can change those
 which_imatrix = 1  # | type of the interaction matrix
 K = 2              # | number of interdependencies per decision variable
-reorg = 50         # | reorganization: in which round we merge the two units
+reorg = 25         # | reorganization: in which round we merge the two units
 # --------------------
+
+if which_imatrix >1:  # to avoid a common mistake
+    K = 2
 
 # *** 1. LOAD THE NK LANDSCAPE FILE *****************************************
 
 file_name = expanduser("~")
-NK_landscape = np.load(file_name + '\\NK_land_type_' + str(which_imatrix) +
+NK_landscape = np.load(file_name + '\\NK_workshop\\NK_land_type_' + str(which_imatrix) +
                        '_K_' + str(K) + '_i_' + str(i) + '.npy')
 # remember to change \\ into / on a Mac
 
@@ -73,8 +79,8 @@ for i1 in np.arange(i):
             new_combination = combination.copy()
             new_combA = combination[:int(N/2)].copy()
             new_combB = combination[int(N/2):].copy()
-            choice_varA = int(np.random.randint(0, int(N/2)))
-            choice_varB = int(np.random.randint(0, int(N/2)))
+            choice_varA = np.random.randint(0, int(N/2))
+            choice_varB = np.random.randint(0, int(N/2))
             new_combA[choice_varA] = abs(new_combA[choice_varA] - 1)
             new_combB[choice_varB] = abs(new_combB[choice_varB] - 1)
             new_combination[:int(N/2)] = new_combA.copy()
@@ -104,8 +110,9 @@ Fitness3 = np.mean(Output3, axis=0)
 
 # *** 3. PLOT ***************************************************************
 
-plt.figure(1, facecolor='white', figsize=(8, 6))
-plt.plot(Fitness3, color='blue', linewidth=2, label='centr in t: ' + str(reorg))
+plt.figure(1, facecolor='white', figsize=(8, 6), dpi=150)  # for screens with
+#          higher resolution change dpi to 150 or 200. For normal use 75.
+plt.plot(Fitness3, color='blue', linewidth=2, label='centr in t=' + str(reorg))
 plt.ylim(0.5, 1)
 plt.legend(loc=4,prop={'size':10})
 plt.title('Results of local search', size=12)
@@ -114,6 +121,6 @@ plt.ylabel('fitness', size=12)
 
 print('For IM=' + str(which_imatrix) + ' and reorg in round: ' + str(reorg))
 print('Final fitness level for decentr/centr: ' + str(Fitness3[t-1]))
+print('Avg. cumulative fitness level(decentr): ' + str(np.mean(Fitness3[:t-1])))
 
-
-
+# END OF LINE
