@@ -1,25 +1,27 @@
 # -*- coding: utf-8 -*-
-"""
+'''
 Created on Thu Jun 14 15:07:29 2018
 
 @author: Maciej Workiewicz
-"""
 
-print("""
+The code has been tested on Python 2.7 and 3.6 and higher
+'''
+
+print('''
 ----------------------------------------------------
 Running Module 2: Local search with long jumps
 ----------------------------------------------------
-""")
+''')
 
 import numpy as np
 from os.path import expanduser  # new
 import matplotlib.pyplot as plt
 
-# Do not change these parameters----
-N = 6  #                           |
-i = 1000  # number of iterations   |
-t = 50  # time periods             |
-# ----------------------------------
+# Do not change these parameters--------------------------------------------
+N = 6  #    set to N=6
+i = 1000  # number of iterations, set to 1000 to save time
+t = 50  # time periods set to 50 initially
+# --------------------------------------------------------------------------
 
 '''
 You can experiment with different setting of the following two variables:
@@ -32,17 +34,20 @@ K - set to 2 for which_imatrix = 2, 3, and 4. For which_imatrix=1 you can choose
 # You can change those ---
 which_imatrix = 1      # | type of the interaction matrix
 K = 2                  # | number of interdependencies per decision variable
-p_jump = 0.0           # | probability of a long jump in a given round
+p_jump = 0.1           # | probability of a long jump in a given round
 # ------------------------
+
+if which_imatrix >1:  # to avoid a common mistake
+    K = 2
 
 # *** 1. LOAD THE NK LANDSCAPE FILE *****************************************
 
 file_name = expanduser("~")
-NK_landscape = np.load(file_name + '\\NK_land_type_' + str(which_imatrix) +
+NK_landscape = np.load(file_name + '\\NK_workshop\\NK_land_type_' + str(which_imatrix) +
                        '_K_' + str(K) + '_i_' + str(i) + '.npy')
-                       # remember to change \\ into / on a Mac
 
 power_key = np.power(2, np.arange(N - 1, -1, -1))
+
 
 # *** 2. LOCAL SEARCH WITH LONG JUMPS ***************************************
 
@@ -52,8 +57,8 @@ for i1 in np.arange(i):
     combination = np.random.binomial(1, 0.5, N)  # gen initial combination
     row = np.sum(combination*power_key)  # finding the address in the array
     fitness = NK_landscape[i1, row, 2*N]  # piggyback on work done previously
-    max_fit = np.max(NK_landscape[i1, :, 2*N])  # we will use it for normalization
-    min_fit = np.min(NK_landscape[i1, :, 2*N])  # ditto
+    max_fit = np.max(NK_landscape[i1, :, 2*N])
+    min_fit = np.min(NK_landscape[i1, :, 2*N])
     fitness_norm = (fitness - min_fit)/(max_fit - min_fit)  # normalize 0 to 1
     for t1 in np.arange(t):  # time for local search
         Output2[i1, t1] = fitness_norm
@@ -75,7 +80,8 @@ Fitness2 = np.mean(Output2, axis=0)
 # *** 3. PLOT ***************************************************************
 
 # We will do a simple plot of the average fitness value over t periods
-plt.figure(1, facecolor='white', figsize=(8, 6))
+plt.figure(1, facecolor='white', figsize=(8, 6), dpi=150)  # for screens with
+#          higher resolution change dpi to 150 or 200. For normal use 75.
 plt.plot(Fitness2, color='green', linewidth=2, label='p_jump='+str(p_jump))
 plt.ylim(0.5, 1)
 plt.legend(loc=4,prop={'size':10})
