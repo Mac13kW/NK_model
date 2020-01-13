@@ -279,7 +279,7 @@ print('average minimum value: ' + str(np.mean(min_values)))
 # plot histogram of the number of local peaks in our sample
 plt.figure(1, facecolor='white', figsize=(8, 6), dpi=150)  # for screens with
 #          higher resolution change dpi to 150 or 200. For normal use 75.
-plt.hist(number_of_peaks, bins=50, range=(1, 200), color='dodgerblue')
+plt.hist(number_of_peaks, bins=20, range=(1, 20), color='dodgerblue', edgecolor='black') # adjust if necessary
 plt.title('Distribution of the number of peaks', size=12)
 plt.xlabel('number of peaks', size=10)
 plt.ylabel('frequency', size=10)
